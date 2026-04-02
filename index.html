@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VC Red Flag Radar - Solid Water</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --teal:#2C4A52;
+  --teal-light:#3d6270;
+  --pink:#E8437A;
+  --pink-light:#f0608e;
+  --bg:#FFFFFF;
+  --surface:#F5F3F0;
+  --border:#E2DFDA;
+  --border-strong:#C8C4BE;
+}
+html,body{background:var(--bg);color:var(--teal);font-family:'DM Sans',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:720px;margin:0 auto;padding:2.5rem 1.5rem 4rem;}
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* BRAND BAR */
+.brand-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;}
+.brand{font-size:12px;font-weight:600;letter-spacing:0.2em;color:var(--teal);text-transform:uppercase;}
+.brand-tag{font-size:11px;font-weight:500;letter-spacing:0.12em;color:var(--pink);text-transform:uppercase;}
+.divider{height:1px;background:var(--border);margin-bottom:2rem;}
+
+/* INTRO */
+.section-tag{font-size:11px;font-weight:600;letter-spacing:0.18em;color:var(--pink);text-transform:uppercase;margin-bottom:1.25rem;}
+.intro-title-question{font-family:'Playfair Display',serif;font-size:52px;font-weight:700;line-height:1.1;color:var(--teal);margin-bottom:0;}
+.intro-title-cta{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;line-height:1.1;color:var(--pink);text-transform:uppercase;margin-bottom:0.25rem;}
+.intro-sub{font-size:16px;font-weight:400;color:var(--teal);line-height:1.7;margin:1.5rem 0 2rem;max-width:520px;}
+
+.stat-row{display:flex;flex-direction:column;gap:0;margin:0 0 2.5rem;border-left:2px solid var(--pink);padding-left:1.4rem;}
+.stat-box{display:flex;align-items:baseline;gap:1.1rem;padding:0.85rem 0;border-bottom:1px solid var(--border);}
+.stat-box:last-child{border-bottom:none;}
+.stat-num{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;color:var(--pink);flex-shrink:0;line-height:1;}
+.stat-desc{font-size:14px;font-weight:400;color:var(--teal);line-height:1.55;}
+
+.primary-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;background:var(--pink);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;transition:background 0.15s,transform 0.1s;}
+.primary-btn:hover{background:var(--pink-light);}
+.primary-btn:active{transform:scale(0.98);}
+.email-block{margin:0 0 1.5rem;}
+.email-label{font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--teal);margin-bottom:0.6rem;}
+.email-row{display:flex;flex-direction:column;gap:10px;background:transparent;}
+.email-input-wrap{border:1px solid var(--border-strong);border-radius:8px;background:var(--bg);}.email-input-wrap:focus-within{border-color:var(--pink);}
+.email-input{width:100%;box-sizing:border-box;padding:14px 16px;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--teal);background:transparent;}
+.email-input::placeholder{color:var(--border-strong);}
+.email-submit{width:100%;padding:16px 24px;background:var(--pink);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;transition:background 0.15s;white-space:nowrap;}
+.email-submit:hover{background:var(--pink-light);}
+.email-submit:disabled{background:var(--border-strong);cursor:not-allowed;}
+.email-error{font-size:12px;color:#A32D2D;margin-top:6px;display:none;}
+.email-success{font-size:12px;color:#27500A;margin-top:6px;display:none;}
+
+/* QUIZ */
+.progress-wrap{margin-bottom:2.5rem;}
+.progress-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.progress-label{font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink);}
+.progress-count{font-size:12px;font-weight:500;color:var(--teal);}
+.progress-bar{height:3px;background:var(--border);border-radius:2px;}
+.progress-fill{height:3px;background:var(--pink);border-radius:2px;transition:width 0.35s ease;}
+
+.q-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--teal);line-height:1.3;margin-bottom:2rem;}
+
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:2.5rem;}
+.opt{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;background:var(--bg);transition:border-color 0.15s,background 0.15s;}
+.opt:hover{border-color:var(--teal-light);background:var(--surface);}
+.opt.selected{border-color:var(--pink);background:#FEF4F7;}
+.opt-bullet{width:20px;height:20px;border-radius:50%;border:2px solid var(--border-strong);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:border-color 0.15s;}
+.opt.selected .opt-bullet{border-color:var(--pink);}
+.opt-bullet-inner{width:8px;height:8px;border-radius:50%;background:var(--pink);opacity:0;transition:opacity 0.15s;}
+.opt.selected .opt-bullet-inner{opacity:1;}
+.opt-text{font-size:15px;font-weight:400;color:var(--teal);line-height:1.5;}
+
+.nav-row{display:flex;justify-content:space-between;align-items:center;}
+.q-counter{font-size:13px;font-weight:400;color:var(--teal);}
+.next-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:var(--pink);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;opacity:0.3;pointer-events:none;transition:opacity 0.15s,background 0.15s;}
+.next-btn.ready{opacity:1;pointer-events:all;}
+.next-btn.ready:hover{background:var(--pink-light);}
+
+/* RESULT */
+.score-strip{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;}
+.verdict-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;}
+.verdict-badge.red{background:#FCEBEB;color:#A32D2D;border:1px solid #F7C1C1;}
+.verdict-badge.amber{background:#FAEEDA;color:#633806;border:1px solid #FAC775;}
+.verdict-badge.green{background:#EAF3DE;color:#27500A;border:1px solid #C0DD97;}
+.score-pill{font-size:12px;font-weight:600;color:var(--teal);background:var(--surface);border:1px solid var(--border);padding:5px 12px;border-radius:20px;}
+
+.result-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--teal);line-height:1.25;margin-bottom:0.75rem;}
+.result-sub{font-size:15px;font-weight:400;color:var(--teal);line-height:1.7;}
+
+.section-divider{display:flex;align-items:center;gap:12px;margin:2rem 0 1.25rem;}
+.section-divider-label{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--pink);white-space:nowrap;}
+.section-divider-line{flex:1;height:1px;background:var(--border);}
+
+.memo-box{background:var(--teal);border-radius:12px;padding:1.5rem 1.5rem 1.5rem 1.75rem;border-left:4px solid var(--pink);}
+.memo-label{font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:0.75rem;}
+.memo-text p{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:400;font-style:normal;color:#FFFFFF;line-height:1.8;margin-bottom:0.75rem;}
+.memo-text p:last-child{margin-bottom:0;}
+
+.flag-item{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);}
+.flag-item:last-child{border-bottom:none;}
+.flag-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.flag-dot.red{background:#E24B4A;}
+.flag-dot.amber{background:#EF9F27;}
+.flag-dot.green{background:#639922;}
+.flag-topic{font-size:13px;font-weight:600;color:var(--teal);margin-bottom:5px;}
+.flag-detail{font-size:14px;font-weight:400;color:var(--teal);line-height:1.6;}
+
+.q-item{padding:16px 0;border-bottom:1px solid var(--border);}
+.q-item:last-child{border-bottom:none;}
+.q-item-num{font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink);margin-bottom:6px;}
+.q-item-text{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;font-style:normal;color:var(--teal);margin-bottom:6px;line-height:1.4;}
+.q-item-hint{font-size:14px;font-weight:400;color:var(--teal);line-height:1.6;}
+
+.cta-box{margin-top:2rem;padding:2rem;background:var(--teal);border-radius:14px;position:relative;overflow:hidden;}
+.cta-box::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--pink);}
+.cta-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#FFFFFF;margin-bottom:0.6rem;}
+.cta-text{font-size:14px;font-weight:400;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:1.5rem;}
+.cta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.cta-btn{padding:14px 26px;background:var(--pink);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;transition:background 0.15s;}
+.cta-btn:hover{background:var(--pink-light);}
+.restart-btn{padding:14px 22px;background:transparent;color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;transition:border-color 0.15s,color 0.15s;}
+.restart-btn:hover{border-color:rgba(255,255,255,0.7);color:#fff;}
+
+.brand-footer{margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.brand-footer-name{font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--teal);}
+.brand-footer-sub{font-size:11px;color:var(--teal);font-weight:400;opacity:0.5;}
+
+@media(max-width:480px){
+  .intro-title-question{font-size:40px;}
+  .intro-title-cta{font-size:24px;}
+  .q-title{font-size:22px;}
+  .result-title{font-size:26px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="screen-intro" class="screen active">
+  <div class="brand-bar">
+    <div class="brand">Solid Water</div>
+    <div class="brand-tag">VC Red Flag Radar</div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-tag">Based on 183 VC interviews</div>
+  <div class="intro-title-question">Does your marketing survive due diligence?</div>
+  
+  <div class="intro-sub">8 clicks. See exactly what an investor thinks and writes in their notes when they hear your answers.</div>
+  <div class="stat-row">
+    <div class="stat-box"><span class="stat-num">69%</span><div class="stat-desc">of VCs have seen poor marketing prevent a company from scaling</div></div>
+    <div class="stat-box"><span class="stat-num">61%</span><div class="stat-desc">say startups lack a clear customer acquisition strategy</div></div>
+    <div class="stat-box"><span class="stat-num">23%</span><div class="stat-desc">believe startups adequately plan their marketing budgets</div></div>
+  </div>
+  <div class="email-block">
+    <div class="email-label">Enter your email to start</div>
+    <div class="email-row">
+      <div class="email-input-wrap">
+        <input class="email-input" type="email" id="email-input" placeholder="you@company.com" />
+      </div>
+      <button class="email-submit" id="email-submit" onclick="submitEmail()">Start the diagnostic &rarr;</button>
+    </div>
+    <div class="email-error" id="email-error">Please enter a valid email address.</div>
+    <div class="email-success" id="email-success">Got it — starting your diagnostic...</div>
+  </div>
+</div>
+
+<div id="screen-quiz" class="screen">
+  <div class="brand-bar">
+    <div class="brand">Solid Water</div>
+    <div class="brand-tag" id="q-section"></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <div class="progress-label">Your diagnostic</div>
+      <div class="progress-count" id="q-counter"></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  </div>
+  <div class="q-title" id="q-text"></div>
+  <div class="options" id="q-options"></div>
+  <div class="nav-row">
+    <div></div>
+    <button class="next-btn" id="next-btn" onclick="nextQ()">Next &rarr;</button>
+  </div>
+</div>
+
+<div id="screen-result" class="screen">
+  <div class="brand-bar">
+    <div class="brand">Solid Water</div>
+    <div class="brand-tag">Your results</div>
+  </div>
+  <div class="divider"></div>
+  <div class="score-strip">
+    <div class="verdict-badge" id="verdict-badge"></div>
+    <div class="score-pill" id="score-pill"></div>
+  </div>
+  <div class="result-title" id="result-title"></div>
+  <div class="result-sub" id="result-sub"></div>
+  <div class="section-divider"><div class="section-divider-label">Investment memo</div><div class="section-divider-line"></div></div>
+  <div class="memo-box">
+    <div class="memo-label">What the investor writes in their notes</div>
+    <div class="memo-text" id="memo-text"></div>
+  </div>
+  <div class="section-divider"><div class="section-divider-label">Red flags and signals</div><div class="section-divider-line"></div></div>
+  <div id="flags-list"></div>
+  <div class="section-divider"><div class="section-divider-label">3 questions they will ask next</div><div class="section-divider-line"></div></div>
+  <div id="questions-list"></div>
+  <div class="cta-box">
+    <div class="cta-title" id="cta-title"></div>
+    <div class="cta-text" id="cta-text"></div>
+    <div class="cta-row">
+      <a class="cta-btn" href="https://solidwateragency.com/" target="_blank">Talk to Solid Water &rarr;</a>
+      <button class="restart-btn" onclick="restart()">Start over</button>
+    </div>
+  </div>
+  <div class="brand-footer">
+    <div><div class="brand-footer-name">Solid Water</div><div class="brand-footer-sub" style="margin-top:3px;">Growth marketing for high-growth startups</div></div>
+    <div class="brand-footer-sub">Survey of 183 VCs, Jan 2025</div>
+  </div>
+</div>
+
+</div>
+<script>
+var Qs=[
+  {s:"Acquisition",t:"What is currently driving the majority of your incremental revenue growth?",o:[
+    {t:"Paid acquisition channels (e.g. Meta, Google) are the primary growth lever",sc:0,f:"red",tp:"Acquisition channel",d:"Heavy reliance on paid channels is a structural risk. VCs will ask: what happens to growth when spend stops or CPAs increase?",m:"paid_only"},
+    {t:"Organic channels (content, SEO, referrals, word of mouth) contribute the majority",sc:2,f:"green",tp:"Acquisition channel",d:"Organic-led growth is the signal investors value most. It demonstrates product-market pull and sustainable unit economics.",m:"organic"},
+    {t:"Growth is distributed across multiple channels, without a single dominant driver",sc:1,f:"amber",tp:"Acquisition channel",d:"Channel diversification is positive, but the absence of a validated primary engine raises questions about scalability.",m:"mixed"},
+    {t:"Revenue is primarily driven by sales, partnerships, or non-marketing channels",sc:1,f:"amber",tp:"Acquisition channel",d:"Sales-led motions can work, but VCs will probe whether the model scales without a proportional increase in headcount.",m:"sales"}
+  ]},
+  {s:"Acquisition",t:"If you turned off all paid advertising tomorrow, what happens to revenue in 30 days?",o:[
+    {t:"Revenue would decline materially within a 30-day window",sc:0,f:"red",tp:"Paid dependency",d:"This is one of the most common red flags in early-stage marketing due diligence. It signals a business that cannot sustain growth without continuous ad spend.",m:"paid_dep_high"},
+    {t:"Revenue would soften, but retention and organic demand would partially offset",sc:2,f:"green",tp:"Paid dependency",d:"A business with genuine retention and organic floor demonstrates healthy unit economics and defensible growth.",m:"paid_dep_low"},
+    {t:"We have directional assumptions, but have not explicitly modelled this scenario",sc:0,f:"red",tp:"Paid dependency",d:"The absence of scenario modelling is itself a red flag. Investors expect founders to have stress-tested their revenue assumptions.",m:"paid_dep_unknown"},
+    {t:"Paid acquisition is not a meaningful contributor today",sc:2,f:"green",tp:"Paid dependency",d:"No paid dependency is a strong signal, provided organic or other channels are generating consistent, scalable demand.",m:"paid_dep_none"}
+  ]},
+  {s:"Retention",t:"How would you describe your post-acquisition customer lifecycle strategy?",o:[
+    {t:"Fully developed lifecycle system (onboarding, behavioural triggers, segmentation, CRM automation)",sc:2,f:"green",tp:"Lifecycle strategy",d:"A structured lifecycle system is rare at early stage and immediately differentiates you from the majority of founders VCs see.",m:"ret_strong"},
+    {t:"Foundational lifecycle journeys in place (e.g. onboarding, basic engagement flows)",sc:1,f:"amber",tp:"Lifecycle strategy",d:"A foundation exists, but without behavioural triggers and segmentation, the system is not yet working to defend LTV.",m:"ret_basic"},
+    {t:"Lifecycle is acknowledged as a priority, but not yet systematically built",sc:0,f:"red",tp:"Lifecycle strategy",d:"Acknowledging the gap without addressing it is not reassuring to investors. It signals execution risk in a critical growth lever.",m:"ret_none"},
+    {t:"Focus remains primarily on acquisition; retention is reactive",sc:0,f:"red",tp:"Lifecycle strategy",d:"This is the classic leaky bucket pattern. Filling the top of funnel without managing churn destroys the economics of every channel.",m:"ret_reactive"}
+  ]},
+  {s:"Retention",t:"What level of visibility do you have on retention and cohort performance?",o:[
+    {t:"Clear cohort-level visibility (e.g. 30/60/90-day retention, segmented by user type or acquisition source)",sc:2,f:"green",tp:"Retention data",d:"Cohort-level analysis puts you in the top tier of founders. It signals genuine data fluency and a serious approach to unit economics.",m:"ret_data_strong"},
+    {t:"Reliable top-line retention metrics, with limited cohort segmentation",sc:1,f:"amber",tp:"Retention data",d:"Top-line retention gives a headline number, but without segmentation you are missing the insight that drives decisions.",m:"ret_data_partial"},
+    {t:"Retention is tracked, but analysis is not yet deeply integrated into decision-making",sc:0,f:"red",tp:"Retention data",d:"Tracking without acting on the data is not a retention strategy. VCs will push on whether the numbers inform your roadmap.",m:"ret_data_tracked"},
+    {t:"Retention is not consistently measured or operationalised",sc:0,f:"red",tp:"Retention data",d:"Retention is the metric investors use first to assess startup health. Not measuring it systematically is an immediate concern.",m:"ret_data_none"}
+  ]},
+  {s:"Data & decisions",t:"How do you decide where your marketing budget goes each quarter?",o:[
+    {t:"Attribution data. We know what each channel costs and what it returns",sc:2,f:"green",tp:"Budget decisions",d:"Data-driven budget allocation is what separates a scalable marketing strategy from ad hoc marketing activity.",m:"budget_data"},
+    {t:"We look at overall revenue and adjust based on what seems to be working",sc:1,f:"amber",tp:"Budget decisions",d:"Revenue-correlated intuition is better than pure guesswork, but attribution gaps mean capital is likely being misallocated.",m:"budget_feel"},
+    {t:"Primarily driven by founder judgement and market intuition",sc:0,f:"red",tp:"Budget decisions",d:"Founder intuition does not scale. VCs consistently flag gut-based allocation as a leading indicator of inefficient growth spend.",m:"budget_founder"},
+    {t:"We follow what competitors do, adjusted for our budget",sc:0,f:"red",tp:"Budget decisions",d:"Copying competitor channels without independent validation is one of the most common and costly mistakes at this stage.",m:"budget_copy"}
+  ]},
+  {s:"Data & decisions",t:"A VC asks: Show me where each paying customer came from. What do you show them?",o:[
+    {t:"Multi-touch attribution with clear linkage from channel to revenue and payback",sc:2,f:"green",tp:"Attribution",d:"Multi-touch attribution is the gold standard. Very few early-stage companies can demonstrate this — it signals operational maturity.",m:"attr_strong"},
+    {t:"Blended attribution (e.g. GA, MMPs) with some gaps but usable for decisions",sc:1,f:"amber",tp:"Attribution",d:"Blended attribution is workable but expect the VC to probe the gaps. Last-click models misattribute a material share of conversions.",m:"attr_partial"},
+    {t:"Platform-level reporting (ad managers, analytics tools) used as primary source",sc:0,f:"red",tp:"Attribution",d:"Platform-reported data is self-serving and well-understood to overstate contribution. This signals no independent measurement.",m:"attr_platform"},
+    {t:"Qualitative or self-reported attribution (e.g. How did you hear about us?)",sc:0,f:"red",tp:"Attribution",d:"Qualitative signals cannot replace structured attribution. VCs call this data blindness — it makes the growth story unverifiable.",m:"attr_qualitative"}
+  ]},
+  {s:"Team",t:"Who is actually responsible for your marketing strategy right now?",o:[
+    {t:"A dedicated CMO, VP Marketing, or Head of Growth with relevant experience",sc:2,f:"green",tp:"Marketing leadership",d:"Senior marketing leadership at early stage is rare. It immediately signals to investors that you understand what scaling actually requires.",m:"team_senior"},
+    {t:"The founder, who also handles product, hiring, and investor relations",sc:0,f:"red",tp:"Marketing leadership",d:"Founder-led marketing without dedicated senior support is one of the most common reasons growth stalls post-Series A.",m:"team_founder"},
+    {t:"Execution-led (junior team or coordinators) with limited strategic ownership",sc:0,f:"red",tp:"Marketing leadership",d:"Junior execution without senior strategy is an expensive gap. Tactics without direction rarely produce scalable growth.",m:"team_junior"},
+    {t:"Externalised to an agency or partners",sc:1,f:"amber",tp:"Marketing leadership",d:"Agencies can execute effectively, but rarely own strategy. The question VCs will ask: who is the internal strategic owner?",m:"team_agency"}
+  ]},
+  {s:"Team",t:"How is growth and marketing represented in your investor narrative?",o:[
+    {t:"Detailed growth model (channel mix, CAC, LTV, payback, and scaling assumptions)",sc:2,f:"green",tp:"Investor narrative",d:"A detailed growth model signals financial discipline and strategic clarity. This is what investor-ready marketing looks like.",m:"proposal_strong"},
+    {t:"High-level marketing plan with directional budget and expected outcomes",sc:1,f:"amber",tp:"Investor narrative",d:"Directional plans are a starting point, but without channel-level economics the VC cannot assess capital efficiency.",m:"proposal_line"},
+    {t:"Embedded within broader operating costs without detailed breakdown",sc:0,f:"red",tp:"Investor narrative",d:"Bundling marketing into operating costs signals that growth has not been modelled as a standalone function. This is a common and avoidable red flag.",m:"proposal_buried"},
+    {t:"Not yet formalised; to be defined post-fundraise",sc:0,f:"red",tp:"Investor narrative",d:"Telling an investor you will define your growth strategy after they fund you is the most damaging answer in this category.",m:"proposal_none"}
+  ]}
+];
+
+var cur=0,ans=[],sel=null;
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpeQDbY8ixLWOfHypl5Y7LWD8MWT6psUZnycEukM-_6i3GTtC0iJKRL5bcsQzkkw/exec";
+var userEmail = "";
+
+function submitEmail(){
+  var input = document.getElementById("email-input");
+  var email = input.value.trim();
+  var errEl = document.getElementById("email-error");
+  var sucEl = document.getElementById("email-success");
+  var btn = document.getElementById("email-submit");
+  errEl.style.display = "none";
+  if(!email || !/^[^@]+@[^@]+.[^@]+$/.test(email)){
+    errEl.style.display = "block"; return;
+  }
+  userEmail = email;
+  btn.disabled = true;
+  sucEl.style.display = "block";
+  setTimeout(function(){ startQuiz(); }, 600);
+}
+
+function sendToSheets(resultData){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE") return;
+  var params = new URLSearchParams();
+  params.append("data", JSON.stringify(resultData));
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: params
+  }).catch(function(err){ console.error("Sheets error:", err); });
+}
+
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  renderQ();
+}
+
+function renderQ(){
+  var q=Qs[cur];sel=null;
+  document.getElementById('q-section').textContent=q.s;
+  document.getElementById('q-text').textContent=q.t;
+  document.getElementById('q-counter').textContent=(cur+1)+' / '+Qs.length;
+  document.getElementById('progress').style.width=((cur/Qs.length)*100)+'%';
+  var btn=document.getElementById('next-btn');
+  btn.classList.remove('ready');
+  btn.innerHTML=cur===Qs.length-1?'See results &rarr;':'Next &rarr;';
+  var c=document.getElementById('q-options');c.innerHTML='';
+  q.o.forEach(function(o,i){
+    var d=document.createElement('div');d.className='opt';
+    d.innerHTML='<div class="opt-bullet"><div class="opt-bullet-inner"></div></div><div class="opt-text">'+o.t+'</div>';
+    d.onclick=function(){pick(i);};
+    c.appendChild(d);
+  });
+}
+
+function pick(i){
+  sel=i;
+  document.querySelectorAll('.opt').forEach(function(el,idx){el.classList.toggle('selected',idx===i);});
+  document.getElementById('next-btn').classList.add('ready');
+}
+
+function nextQ(){
+  if(sel===null)return;
+  ans.push({q:Qs[cur],a:Qs[cur].o[sel]});
+  cur++;
+  if(cur>=Qs.length){showResult();}else{renderQ();}
+}
+
+function showResult(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-result').classList.add('active');
+  var tot=ans.reduce(function(s,a){return s+a.a.sc;},0);
+  var max=Qs.length*2;var pct=tot/max;
+  var reds=ans.filter(function(a){return a.a.f==='red';});
+  var badge=document.getElementById('verdict-badge'),title=document.getElementById('result-title'),sub=document.getElementById('result-sub');
+  document.getElementById('score-pill').textContent=tot+' / '+max+' points';
+  if(pct>=0.75){
+    badge.className='verdict-badge green';badge.textContent='Strong profile';
+    title.textContent='Your marketing holds up under scrutiny.';
+    sub.textContent='You are in the top tier of what VCs see at this stage. The gaps below are refinements, not dealbreakers — but they will still surface in a deep-dive conversation.';
+  }else if(pct>=0.45){
+    badge.className='verdict-badge amber';badge.textContent='Yellow flags present';
+    title.textContent='An investor will keep digging. They have reasons to.';
+    sub.textContent='There are real strengths here, but '+reds.length+' red flag'+(reds.length!==1?'s':'')+' will trigger follow-up questions that most founders are not prepared for.';
+  }else{
+    badge.className='verdict-badge red';badge.textContent='Significant red flags';
+    title.textContent='Your marketing narrative has gaps that will concern investors.';
+    sub.textContent='With '+reds.length+' red flag'+(reds.length!==1?'s':'')+', an experienced VC will identify these issues within the first 10 minutes. This is fixable — but it needs to be addressed before the next raise.';
+  }
+  document.getElementById('memo-text').innerHTML=buildMemo(ans,pct);
+  var fl=document.getElementById('flags-list');fl.innerHTML='';
+  ans.forEach(function(a){
+    var d=document.createElement('div');d.className='flag-item';
+    d.innerHTML='<div class="flag-dot '+a.a.f+'" style="margin-top:6px;flex-shrink:0;"></div><div style="flex:1"><div class="flag-topic">'+a.a.tp+'</div><div class="flag-detail">'+a.a.d+'</div></div>';
+    fl.appendChild(d);
+  });
+  var qs=buildQs(ans,pct);
+  var ql=document.getElementById('questions-list');ql.innerHTML='';
+  qs.forEach(function(q,i){
+    var d=document.createElement('div');d.className='q-item';
+    d.innerHTML='<div class="q-item-num">Question '+(i+1)+'</div><div class="q-item-text">"'+q.q+'"</div><div class="q-item-hint">'+q.h+'</div>';
+    ql.appendChild(d);
+  });
+  var ct=document.getElementById('cta-title'),cx=document.getElementById('cta-text');
+  if(pct>=0.75){ct.textContent='Ready to make this airtight?';cx.textContent='You have a strong foundation. Solid Water works with founders like you to turn good marketing instincts into investor-grade narratives and scalable growth systems.';}
+  else if(pct>=0.45){ct.textContent='The gaps are addressable with the right support.';cx.textContent='Most of what is flagged here can be fixed in 4 to 6 weeks with the right senior marketing input. Solid Water helps early-stage founders build the systems and narrative that VCs actually want to see.';}
+  else{ct.textContent='This is exactly what Solid Water was built for.';cx.textContent='The red flags in your profile are common and completely fixable. But they need to be fixed before your next raise, not after. Talk to us about what a 60-day intervention looks like.';}
+
+  var verdict = pct>=0.75 ? 'Strong profile' : pct>=0.45 ? 'Yellow flags present' : 'Significant red flags';
+  var score = tot + ' / ' + max;
+  var answersData = ans.map(function(a){
+    return {section:a.q.s, question:a.q.t, answer:a.a.t, flag:a.a.f, topic:a.a.tp, detail:a.a.d};
+  });
+  sendToSheets({
+    email: userEmail,
+    timestamp: new Date().toISOString(),
+    verdict: verdict,
+    score: score,
+    score_pct: Math.round(pct * 100),
+    red_flags: reds.length,
+    answers: answersData
+  });
+}
+
+function buildMemo(a,pct){
+  var paras=[];
+  var m0=a[0].a.m,m1=a[1].a.m,m2=a[2].a.m,m3=a[3].a.m,m6=a[6].a.m,m7=a[7].a.m;
+  var acq='';
+  if(m0==='paid_only')acq='Acquisition is entirely dependent on paid channels. No organic signal visible. CAC trajectory will be a concern at scale.';
+  else if(m0==='organic')acq='Strong organic acquisition signal. Product-market pull evident without reliance on ad spend.';
+  else if(m0==='mixed')acq='No validated primary acquisition channel. Team still in channel discovery phase.';
+  else acq='Sales-led or partnership-driven motion. Scalability without proportional headcount increase is unclear.';
+  var dep='';
+  if(m1==='paid_dep_high')dep='Revenue is fragile — it turns off with the media budget. Capital efficiency will be a recurring concern.';
+  else if(m1==='paid_dep_low')dep='Business demonstrates resilience beyond paid. Organic demand and retention provide a credible revenue floor.';
+  else if(m1==='paid_dep_unknown')dep='Core revenue assumptions have not been stress-tested. This raises questions about the depth of financial modelling.';
+  else dep='No meaningful paid dependency. Positive signal for long-term CAC trajectory and capital efficiency.';
+  paras.push(acq+' '+dep);
+  var ret='';
+  if(m2==='ret_none'||m2==='ret_reactive')ret='No proactive lifecycle strategy in place. Classic leaky bucket: acquisition spend is not defended by retention. LTV projections should be treated with caution.';
+  else if(m2==='ret_basic')ret='Foundational lifecycle journeys exist but lack the behavioural depth needed to materially defend LTV.';
+  else ret='Structured lifecycle system in place. Retention story is credible and LTV projections are supportable.';
+  var retd='';
+  if(m3==='ret_data_none'||m3==='ret_data_tracked')retd='No cohort-level visibility. Unit economics are assumption-based rather than observed.';
+  else if(m3==='ret_data_partial')retd='Top-line retention is known but cohort segmentation is absent. Growth story has gaps that diligence will surface.';
+  else retd='Cohort-level retention visibility is in place. Founder can speak to where value is created and where it is lost.';
+  paras.push(ret+' '+retd);
+  var team='';
+  if(m6==='team_founder'||m6==='team_junior')team='No senior marketing leadership. Execution-only setup. The business will need dedicated strategic marketing capacity immediately post-round.';
+  else if(m6==='team_agency')team='Marketing is externalised. Strategic ownership is unclear and will be a diligence point.';
+  else team='Dedicated marketing leadership in place. Credible to execute on the stated growth strategy.';
+  var bud='';
+  if(m7==='proposal_buried'||m7==='proposal_none')bud='Growth has not been modelled as a standalone function in the investor narrative. This is a significant gap.';
+  else if(m7==='proposal_line')bud='Marketing is present in the plan but without channel-level economics. Capital efficiency cannot be assessed.';
+  else bud='Growth model is investor-grade: channel mix, CAC, LTV, and payback are articulated. Strong signal of financial discipline.';
+  paras.push(team+' '+bud);
+  var overall='';
+  if(pct>=0.75)overall='Overall: above-average marketing foundation for this stage. Recommend proceeding to deeper commercial diligence.';
+  else if(pct>=0.45)overall='Overall: mixed signals. Marketing is not investment-ready in its current form. Addressable with focused senior input.';
+  else overall='Overall: significant marketing concerns across acquisition, retention, and planning. Recommend flagging as a condition of investment.';
+  paras.push(overall);
+  return paras.map(function(p){return '<p>'+p+'</p>';}).join('');
+}
+
+function buildQs(a,pct){
+  var pool=[
+    {c:function(a){return a[0].a.m==='paid_only'||a[1].a.m==='paid_dep_high';},q:"What does your blended CAC look like over the last 6 months, and what is your payback period?",h:"They want to know if paid channels are becoming more or less efficient and whether the economics work at scale."},
+    {c:function(a){return a[2].a.m==='ret_none'||a[2].a.m==='ret_reactive';},q:"Walk me through your Month 1, Month 3, and Month 6 retention numbers by cohort.",h:"If you cannot answer this with specific cohort data, the conversation will stall here."},
+    {c:function(a){return a[3].a.m==='ret_data_none'||a[3].a.m==='ret_data_tracked';},q:"Which customer segment churns most and what have you changed in response?",h:"This tests whether you have done real cohort analysis or are only looking at aggregate churn."},
+    {c:function(a){return a[4].a.m==='budget_founder'||a[4].a.m==='budget_copy';},q:"If you triple the marketing budget next quarter, where does the first 40% go and why?",h:"They are testing whether you have validated, scalable channels ready — or are still in discovery mode."},
+    {c:function(a){return a[5].a.m==='attr_platform'||a[5].a.m==='attr_qualitative';},q:"How do you attribute revenue to specific marketing activities? Walk me through the methodology.",h:"Platform self-reported data will not satisfy this. They want independent, verifiable measurement."},
+    {c:function(a){return a[6].a.m==='team_founder'||a[6].a.m==='team_junior';},q:"Who is the most senior marketing person in your strategy and what have they scaled before?",h:"The real question: do you have the human capital to execute on the growth story you are pitching?"},
+    {c:function(a){return a[7].a.m==='proposal_buried'||a[7].a.m==='proposal_none';},q:"Break down how the marketing allocation from this round will be deployed across channels and on what timeline.",h:"If you have not prepared this, the marketing conversation ends here. Build it before any investor meeting."},
+    {c:function(a){return a[1].a.m==='paid_dep_unknown';},q:"Have you modelled revenue under a scenario where CAC increases 3x?",h:"Scenario modelling is a baseline expectation at this stage. Its absence signals gaps in financial planning."},
+    {c:function(){return true;},q:"What is your North Star metric and how does each marketing investment connect to it?",h:"VCs frequently see founders chasing vanity metrics. They want one clear metric with all activity aligned around it."},
+    {c:function(){return true;},q:"What is a marketing hypothesis you tested that did not work, and what did you change?",h:"This tests experimentation culture. The answer reveals whether you run structured experiments or just run campaigns."}
+  ];
+  var sel=[];
+  for(var i=0;i<pool.length;i++){if(sel.length>=3)break;if(pool[i].c(a))sel.push({q:pool[i].q,h:pool[i].h});}
+  while(sel.length<3){var fb=pool[pool.length-1-(sel.length % pool.length)];if(fb&&sel.findIndex(function(s){return s.q===fb.q;})===-1)sel.push({q:fb.q,h:fb.h});else break;}
+  return sel.slice(0,3);
+}
+
+function restart(){
+  cur=0;ans=[];sel=null;
+  document.getElementById('screen-result').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+}
+</script>
+</body>
+</html>
